@@ -34,10 +34,11 @@ export class GameComponent implements AfterViewInit {
     private stateService: StateService,
     private router: Router,
     private reloadService: ReloadService
-  ) {}
+  ) {  }
 
   ngAfterViewInit(): void {
     this.initKeyBindings();
+        this.initKeyBindings();    
     this.startGame();
   }
 
@@ -73,7 +74,7 @@ export class GameComponent implements AfterViewInit {
         // gotten a chance to fix yet.
         this.reloadService.reloadPage();
       }
-    }, 500);
+    }, 600);
   }
 
   private updateGame(state: IGameState) {

@@ -1,5 +1,5 @@
 import { gameLogic, getInitialState, getUnoccupiedLocation } from './logic';
-import { Command, Commands, IGameState } from './models';
+import { Command, Commands, DEFAULT_PLAYER_COLOR, DEFAULT_PLAYER_SIZE, IGameState } from './models';
 
 export type UpdateCallback = (gameState: IGameState) => void;
 export type GameOverCallback = (reason: string) => void;
@@ -45,12 +45,16 @@ export class Game {
 
     const location = getUnoccupiedLocation(this._gameState);
 
-    this._gameState.players.push({
+    let p = {
       ...location,
       id,
       name,
-      score: 1,
-    });
+      score: 0,
+      size: DEFAULT_PLAYER_SIZE,
+      color: DEFAULT_PLAYER_COLOR,
+      message: []
+    };
+    this._gameState.players.push(p);
   }
 
   drop(id: string) {

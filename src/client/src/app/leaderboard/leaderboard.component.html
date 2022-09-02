@@ -1,10 +1,11 @@
-<div class="leaderboard">
-  <ng-container *ngIf="state">
-    <div
-      *ngFor="let playa of state.players | sort: 'score':true"
+<div *ngIf="state" class="leaderboard">
+  <div
+      *ngFor="let playa of state.players | sort: 'score':true; let i = index"
       [class.player]="player?.id === playa.id"
     >
-      {{ playa.name }}: {{ playa.score }}
-    </div>
-  </ng-container>
+      {{ playa.name }}: {{ playa.score }}{{ i == 0 ? ' 👑': ''}}
+  </div>
+</div>
+<div class="leaderboard msg" *ngIf="player && player.message && player.message.length">
+  <h4 *ngFor="let m of player.message" style="margin: 4px 0">{{ m }}</h4>
 </div>

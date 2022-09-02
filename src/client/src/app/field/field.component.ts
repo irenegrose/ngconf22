@@ -8,13 +8,9 @@ import {
   SimpleChanges,
   ViewChild,
 } from '@angular/core';
-import { IPlayer, IGameState } from '../../../../models';
+import { IPlayer, IGameState, DEFAULT_PLAYER_COLOR, DEFAULT_PLAYER_NAME, DEFAULT_PLAYER_SIZE, DEFAULT_COIN_COLOR, DEFAULT_OTHER_PLAYER_COLOR } from '../../../../models';
 
-const DEFAULT_COIN_COLOR = 'yellow';
-const DEFAULT_OTHER_PLAYER_COLOR = 'red';
-const DEFAULT_PLAYER_COLOR = 'blue';
-const DEFAULT_PLAYER_NAME = 'You';
-const DEFAULT_PLAYER_SIZE = 5;
+
 // how far apart each grid line is in pixels
 const SCALE = 10;
 // how often a grid line is rendered
@@ -39,6 +35,7 @@ export class FieldComponent implements AfterViewInit, OnChanges {
   playerColor = DEFAULT_PLAYER_COLOR;
   @Input()
   playerSize = DEFAULT_PLAYER_SIZE;
+  coinSize = DEFAULT_PLAYER_SIZE;
 
   canvas?: HTMLCanvasElement;
   ctx?: CanvasRenderingContext2D;
@@ -108,13 +105,12 @@ export class FieldComponent implements AfterViewInit, OnChanges {
 
     // player is always at the center of the screen
     const x = this.canvas.clientWidth / 2;
-    const y = this.canvas.clientHeight / 2;
-
+    const y = this.canvas.clientHeight / 2;   
     this.drawCircle(
       x,
       y,
-      this.playerSize,
-      this.playerColor,
+      this.player ? this.player.size : this.playerSize,
+      this.player ? this.player.color : this.playerColor,
       'black',
       this.player?.name ?? DEFAULT_PLAYER_NAME
     );
@@ -135,8 +131,18 @@ export class FieldComponent implements AfterViewInit, OnChanges {
     for (let coin of visibleCoins) {
       const x = coin.canvasCoord!.x;
       const y = coin.canvasCoord!.y;
-
-      this.drawCircle(x, y, this.playerSize, DEFAULT_COIN_COLOR, 'gray');
+      
+      let stroke = 'gray';
+      if (coin.coin.isDeadly) {
+        this.ctx.lineWidth = 2;
+        stroke = 'red';
+      } else if (coin.coin.isSizeup) {
+        this.ctx.lineWidth = 2;
+        stroke = 'green';
+      } else {
+        this.ctx.lineWidth = 1;
+      }
+      this.drawCircle(x, y, this.coinSize, DEFAULT_COIN_COLOR, stroke);
     }
   }
 
@@ -160,8 +166,8 @@ export class FieldComponent implements AfterViewInit, OnChanges {
       this.drawCircle(
         x,
         y,
-        this.playerSize,
-        DEFAULT_OTHER_PLAYER_COLOR,
+        p.player.size,
+        p.player.color,
         'black',
         p.player.name
       );
@@ -211,7 +217,7 @@ export class FieldComponent implements AfterViewInit, OnChanges {
     if (label) {
       this.ctx.textAlign = 'center';
       const nameHeight = Number(/\d+/.exec(this.ctx.font));
-      this.ctx.fillText(label, x, y - nameHeight - 0.2 * this.playerSize);
+      this.ctx.fillText(label, x, y - nameHeight - 0.2 * size);
     }
   }
 }
